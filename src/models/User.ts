@@ -1,29 +1,58 @@
-type UserProps = { name?: string; age?: number };
+import { AxiosResponse } from 'axios';
+import { Attributes } from './Attributes';
+import { Eventing } from './Eventing';
+import { Sync } from './Sync';
 
-type Callback = () => void;
+type UserProps = { id?: number; name?: string; age?: number };
 
-export class User {
-  private events: { [key: string]: Callback[] } = {};
+const rootUrl = 'http://localhost:3000/users';
 
-  constructor(private data: UserProps) {}
+export class User /*extends Attributes<UserProps>*/ {
+  public events: Eventing = new Eventing();
+  public sync: Sync<UserProps> = new Sync<UserProps>(rootUrl);
+  public attributes: Attributes<UserProps>;
 
-  get(propName: string): string | number {
-    return this.data[propName];
+  constructor(attrs: UserProps) {
+    this.attributes = new Attributes<UserProps>(attrs);
+  }
+
+  get on() {
+    return this.events.on;
+  }
+
+  get get() {
+    return this.attributes.get;
+  }
+
+  get trigger() {
+    return this.events.trigger;
   }
 
   set(update: UserProps): void {
-    Object.assign(this.data, update);
+    this.attributes.set(update);
+    this.events.trigger('change');
   }
 
-  on(eventName: string, callback: Callback): void {
-    const handlers = this.events[eventName] ?? [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
+  fetch(): void {
+    const id = this.get('id');
+
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch without an id');
+    }
+
+    this.sync.fetch(id).then((response: AxiosResponse<UserProps>): void => {
+      this.set(response.data);
+    });
   }
 
-  trigger(eventName: string): void {
-    const handlers = this.events[eventName];
-
-    handlers?.forEach((callback) => callback());
+  save(): void {
+    this.sync
+      .save(this.attributes.getAll())
+      .then((): void => {
+        this.trigger('save');
+      })
+      .catch((): void => {
+        this.trigger('error');
+      });
   }
 }

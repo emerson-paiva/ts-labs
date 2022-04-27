@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:db": "npx json-server -w db.json",
+    "start": "parcel index.html"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "json-server": "^0.17.0",
     "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "axios": "^0.27.1"
   }
 }
