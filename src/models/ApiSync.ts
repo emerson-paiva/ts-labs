@@ -4,7 +4,7 @@ type Save = {
   id?: number;
 };
 
-export class Sync<T extends Save> {
+export class ApiSync<T extends Save> {
   constructor(public rootUrl: string) {}
 
   fetch = (id: number): AxiosPromise<T> => {
