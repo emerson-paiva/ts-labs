@@ -1,10 +1,10 @@
 import axios, { AxiosPromise } from 'axios';
 
-type Save = {
+type ApiSyncProps = {
   id?: number;
 };
 
-export class ApiSync<T extends Save> {
+export class ApiSync<T extends ApiSyncProps> {
   constructor(public rootUrl: string) {}
 
   fetch = (id: number): AxiosPromise<T> => {
