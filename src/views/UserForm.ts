@@ -6,12 +6,13 @@ export class UserForm extends View<User, UserProps> {
     return {
       'click:.btn-random-age': this.onSetRandomAgeClick,
       'click:.btn-change-name': this.onSetName,
+      'click:.btn-save': this.onSaveClick,
     };
   }
 
-  onSetRandomAgeClick = (): void => {
-    this.model.setRandomAge();
-  };
+  onSaveClick = (): void => this.model.save();
+
+  onSetRandomAgeClick = (): void => this.model.setRandomAge();
 
   onSetName = (): void => {
     const input = this.parent.querySelector('input');
@@ -24,12 +25,10 @@ export class UserForm extends View<User, UserProps> {
   template(): string {
     return `
       <div>
-        <h1>User Form</h1>
-        <div>User name: ${this.model.get('name')}</div>
-        <div>User age: ${this.model.get('age')}</div>
-        <input id='name' />
+        <input id='name' placeholder="${this.model.get('name')}" />
         <button class='btn-change-name'>Change name</button>
         <button class='btn-random-age'>Set Random Age</button>
+        <button class='btn-save'>Save</button>
       </div>
     `;
   }
